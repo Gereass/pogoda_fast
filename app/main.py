@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
 import requests
@@ -32,7 +33,7 @@ aa= [{'time': '2025-05-28T00:00', 'temperature': 18.4, 'humidity': 0, 'wind_spee
                {'time': '2025-05-28T23:00', 'temperature': 20.0, 'humidity': 0, 'wind_speed': 0}]
 
 
-
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # Настройка шаблонизатора Jinja2
 templates = Jinja2Templates(directory="app/templates")
 
@@ -68,12 +69,12 @@ def process_data(response: list):
     #     })
 
     current_time = datetime.now().strftime("%Y-%m-%dT%H:00")
-    current_weather = next((item for item in aa if item["time"] == current_time), None)
+    forecast_now = next((item for item in aa if item["time"] == current_time), None)
 
     forecast = response
-    print(current_weather)
 
-    return current_weather
+    return forecast, forecast_now
+    # return [current_weather]
 
 # Главная страница
 @app.get("/", response_class=HTMLResponse)
@@ -102,9 +103,14 @@ async def get_weather(request: Request, city: str = Form(...)):
     # }
     # response = requests.get(url, params=params).json()
 
-    # forecast= process_data(response)
-    forecast= process_data(aa)
+    # forecast = process_data(response)
+    forecast, forecast_now= process_data(aa)
+
+    # return templates.TemplateResponse(
+    #     "index.html",
+    #     {"request": request, "error": "Город не найден. Попробуйте снова."}
+    # )
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "city": city, "forecast": forecast}
+        {"request": request, "city": city, "forecast": forecast, "forecast_now": forecast_now,}
     )
