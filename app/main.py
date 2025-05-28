@@ -21,8 +21,8 @@ def get_coordinates(city_name: str):
     response = requests.get(url, params=params).json()
     if "results" in response:
         result = response["results"][0]
-        return float(result["latitude"]), float(result["longitude"])
-    return None, None
+        return float(result["latitude"]), float(result["longitude"]), str(result["name"])
+    return None, None, None
 
 # Функция для обработки данных ответа
 def process_data(response: list):
@@ -51,7 +51,7 @@ async def read_root(request: Request):
 # Обработка POST-запроса для получения прогноза погоды
 @app.post("/weather/", response_class=HTMLResponse)
 async def get_weather(request: Request, city: str = Form(...)):
-    latitude, longitude = get_coordinates(city)
+    latitude, longitude, city_name = get_coordinates(city)
     if not latitude or not longitude:
         return templates.TemplateResponse(
             "index.html",
@@ -75,5 +75,5 @@ async def get_weather(request: Request, city: str = Form(...)):
 
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "city": city, "forecast": forecast, "forecast_now": forecast_now,}
+        {"request": request, "city": city_name, "forecast": forecast, "forecast_now": forecast_now,}
     )

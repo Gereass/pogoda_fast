@@ -3,3 +3,4 @@ __pycache__
 auth.db
 aa.html
 .vscode
+.pytest_cache
