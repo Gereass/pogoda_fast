@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погода</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .forecast {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Прогноз погоды</h1>
+    <form method="post" action="/weather/">
+        <label for="city">Введите название города:</label>
+        <input type="text" id="city" name="city" required>
+        <button type="submit">Получить прогноз</button>
+    </form>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if forecast %}
+        <div class="forecast">
+            <h2>Прогноз для города: {{ city }}</h2>
+            {% for item in forecast %}
+                <div>
+                    <strong>Время:</strong> {{ item.time }}<br>
+                    <strong>Температура:</strong> {{ item.temperature }}°C<br>
+                    <!-- <strong>Влажность:</strong> {{ item.humidity }}%<br>
+                    <strong>Скорость ветра:</strong> {{ item.wind_speed }} м/с -->
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>
